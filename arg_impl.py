@@ -201,8 +201,11 @@ class ArgImpl:
                 return output_data
 
             v = str(v)
+            # None
+            if v == "$?":
+                self.full_arg_dict[k] = None
             # evaluate
-            if v[0:2] == "$!":
+            elif v[0:2] == "$!":
                 eval_str = search_and_change(v[2:], self.core_arg_dict)
                 pattern = re.compile(r"(.+)\s*((\+|-|\*|//|%)\s*(.+)\s*|\[\s*(.+)\s*\]|\.len)")
                 result = pattern.match(eval_str)
@@ -232,6 +235,11 @@ class ArgImpl:
             else:
                 self.full_arg_dict[k] = search_and_change(v, self.core_arg_dict)
 
+    def update_from_none(self, key, value) -> None:
+        if self.full_arg_dict.get(key, None) is None:
+            self.full_arg_dict[key] = value
+        else:
+            raise ValueError(f"full_dict[{key}] is not None but {self.full_arg_dict[key]}")
 
     @property
     def full_dict(self) -> dict:
@@ -284,5 +292,10 @@ if __name__ == "__main__":
         arg_impl_json_path="./template_arg_impl.json",
         arg_impl_type_key="test_impl"
     )
+    arg_impl.update_from_none("?", 123)
+    try:
+        arg_impl.update_from_none("?", 123)
+    except ValueError as e:
+        print(e)
     print(arg_impl.full_dict)
     print(arg_impl.full_command("echo"))
