@@ -1,0 +1,27 @@
+{
+    "doc": {
+        "$$": "Same replacement. same as the core_arg dict",
+        "$A$": "Replacement. replace $A with value of A, i.e. f'{A}'", 
+        "$A$:$B$,$C$": "Replacement. replace $A$:$B$,$C$ with f'{A}:{B},{C}'",
+        "$!$A$+1": "(only at the beginning) Small evaluation. evaluate $!$A$+1 with eval($A$ + 1), operators only allowed: + - * // % [] .len",
+        "\\$": "Escape. (only in the value) real $",
+        "\\\\": "Escape. (only in the value) real \\ (this is for using \\ and $ together. use \\ normally is also valid)"
+    },
+    "school_impl": {
+        "name": "$$",
+        "age": "$$",
+        "favourite_fruit": "$!$fruits$[0]",
+        "class": 1
+    },
+    "test_impl": {
+        "name": "\\\\$$-Williams",
+        "name2": "\\$$name$-Smiths",
+        "age": "$!$age$+25",
+        "age2": "$!$age$-25",
+        "age3": "$!$age$*25",
+        "age4": "$!$age$//25",
+        "age5": "$!$age$%25",
+        "favourite_fruit": "$!$fruits$[1]",
+        "favourite_fruit2": "$!$fruits$.len"
+    }
+}
