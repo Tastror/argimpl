@@ -58,6 +58,8 @@ class ArgImpl:
                 "favourite_fruit": "apple",
                 "class": 1
             }
+            arg_impl.full_command() == \\
+                "--name=John --age=10 --favourite_fruit=apple --class=1"
             ```
         """
         self.core_arg_dict = core_arg_dict
@@ -117,6 +119,8 @@ class ArgImpl:
                 "favourite_fruit": "apple",
                 "class": 1
             }
+            arg_impl.full_command() == \\
+                "--name=John --age=10 --favourite_fruit=apple --class=1"
             ```
         """
 
@@ -286,13 +290,16 @@ if __name__ == "__main__":
     core_arg_dict = {
         "age": 10,
         "name": "John",
-        "fruits": ["apple", "banana", "orange"]
+        "fruits": ["apple", "banana", "orange"],
+        "human": True,
+        "useless_data": "foo"
     }
     arg_impl_dict = {
         "name": "$$",
         "age": "$$",
         "favourite_fruit": "$!$fruits$[0]",
-        "class": 1
+        "class": 1,
+        "human": "$$"
     }
 
     # dict, dict
