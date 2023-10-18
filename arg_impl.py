@@ -7,6 +7,9 @@ from typing import Optional, Union
 
 class ArgImpl:
 
+    class Empty:
+        pass
+
     def __init__(self) -> None:
         """
         After init, please use `.load_dict()` or `.load_json()` first.
@@ -129,8 +132,8 @@ class ArgImpl:
             if type(self.all_dicts) is not dict:
                 raise ValueError(f"arg_impl_json_path `{self.arg_impl_json_path}` is not a valid dict")
         
-        self.this_type_dict = self.all_dicts.get(self.arg_impl_type_key, None)
-        if self.this_type_dict is None:
+        self.this_type_dict = self.all_dicts.get(self.arg_impl_type_key, self.Empty())
+        if type(self.this_type_dict) is self.Empty:
             raise ValueError(f"arg_impl_type_key `{self.arg_impl_type_key}` does not exist")
         
         self.__parse()
@@ -139,8 +142,8 @@ class ArgImpl:
 
         self.arg_impl_type_key = new_type_key
 
-        self.this_type_dict = self.all_dicts.get(self.arg_impl_type_key, None)
-        if self.this_type_dict is None:
+        self.this_type_dict = self.all_dicts.get(self.arg_impl_type_key, self.Empty())
+        if type(self.this_type_dict) is self.Empty:
             raise ValueError(f"new_type_key `{self.arg_impl_type_key}` does not exist")
         
         self.__parse()
@@ -153,7 +156,16 @@ class ArgImpl:
         for k, v in self.this_type_dict.items():
 
             def search_and_change(input_data, refer_dict):
-                output_data = ""
+
+                # keep the original type (not must be string) if data is Empty
+                def assign_or_append(data, value):
+                    if type(data) is self.Empty:
+                        return value
+                    else:
+                        return str(data) + str(value)
+
+                output_data = self.Empty()
+
                 i = 0
                 inlen = len(input_data)
                 searching_for_end = False
@@ -165,28 +177,28 @@ class ArgImpl:
                             if searching_for_end:
                                 buff += input_data[i + 1]
                             else:
-                                output_data += input_data[i + 1]
+                                output_data = assign_or_append(output_data, input_data[i + 1])
                             i += 1
                         else:
                             if searching_for_end:
                                 buff += "\\"  # non-escaping \\ or last \\
                             else:
-                                output_data += "\\"
+                                output_data = assign_or_append(output_data, "\\")
                     elif searching_for_end and input_data[i] == "$":
                         searching_for_end = False
-                        data = refer_dict.get(buff, None)
-                        if data is None:
+                        data = refer_dict.get(buff, self.Empty())
+                        if type(data) is self.Empty:
                             raise ValueError(f"key `{buff}` does not exist")
-                        output_data += str(data)
+                        output_data = assign_or_append(output_data, data)
                         buff = ""
                     # replacement
                     elif not searching_for_end and input_data[i] == "$":
                         if i + 1 < inlen and input_data[i + 1] == "$":
                             if i + 1 < inlen and input_data[i + 1] == "$":
-                                data = refer_dict.get(k, None)
-                                if data is None:
+                                data = refer_dict.get(k, self.Empty())
+                                if type(data) is self.Empty:
                                     raise ValueError(f"key `{k}` does not exist")
-                                output_data += str(data)
+                                output_data = assign_or_append(output_data, data)
                                 i += 1
                         else:
                             searching_for_end = True
@@ -194,62 +206,73 @@ class ArgImpl:
                         if searching_for_end:
                             buff += input_data[i]
                         else:
-                            output_data += input_data[i]
+                            output_data = assign_or_append(output_data, input_data[i])
                     i += 1
                 if searching_for_end:
                     raise ValueError(f"`${buff}` does not end with `$`, do you mean `${buff}$`?")
                 return output_data
 
-            v = str(v)
-            # None
-            if v == "$?":
-                self.full_arg_dict[k] = None
-            # evaluate
-            elif v[0:2] == "$!":
-                eval_str = search_and_change(v[2:], self.core_arg_dict)
-                pattern = re.compile(r"(.+)\s*((\+|-|\*|//|%)\s*(.+)\s*|\[\s*(.+)\s*\]|\.len)")
-                result = pattern.match(eval_str)
-                if result is None:
-                    raise ValueError(f"`{eval_str}` cannot be evaluated or be evaluated safely")
-                # + - * // %
-                if result.group(3) is not None:
-                    if result.group(3) == "+":
-                        self.full_arg_dict[k] = ast.literal_eval(result.group(1)) + ast.literal_eval(result.group(4))
-                    elif result.group(3) == "-":
-                        self.full_arg_dict[k] = ast.literal_eval(result.group(1)) - ast.literal_eval(result.group(4))
-                    elif result.group(3) == "*":
-                        self.full_arg_dict[k] = ast.literal_eval(result.group(1)) * ast.literal_eval(result.group(4))
-                    elif result.group(3) == "//":
-                        self.full_arg_dict[k] = ast.literal_eval(result.group(1)) // ast.literal_eval(result.group(4))
-                    elif result.group(3) == "%":
-                        self.full_arg_dict[k] = ast.literal_eval(result.group(1)) % ast.literal_eval(result.group(4))
-                else:
-                    if result.group(2) == ".len":
-                        self.full_arg_dict[k] = len(ast.literal_eval(result.group(1)))
+            if type(v) is str:
+                # Empty
+                if v == "$?":
+                    self.full_arg_dict[k] = self.Empty()
+                # evaluate
+                elif v[0:2] == "$!":
+                    eval_str = search_and_change(v[2:], self.core_arg_dict)
+                    pattern = re.compile(r"(.+)\s*((\+|-|\*|//|%)\s*(.+)\s*|\[\s*(.+)\s*\]|\.len)")
+                    result = pattern.match(eval_str)
+                    if result is None:
+                        raise ValueError(f"`{eval_str}` cannot be evaluated or be evaluated safely")
+                    # + - * // %
+                    if result.group(3) is not None:
+                        if result.group(3) == "+":
+                            self.full_arg_dict[k] = ast.literal_eval(result.group(1)) + ast.literal_eval(result.group(4))
+                        elif result.group(3) == "-":
+                            self.full_arg_dict[k] = ast.literal_eval(result.group(1)) - ast.literal_eval(result.group(4))
+                        elif result.group(3) == "*":
+                            self.full_arg_dict[k] = ast.literal_eval(result.group(1)) * ast.literal_eval(result.group(4))
+                        elif result.group(3) == "//":
+                            self.full_arg_dict[k] = ast.literal_eval(result.group(1)) // ast.literal_eval(result.group(4))
+                        elif result.group(3) == "%":
+                            self.full_arg_dict[k] = ast.literal_eval(result.group(1)) % ast.literal_eval(result.group(4))
                     else:
-                        self.full_arg_dict[k] = ast.literal_eval(result.group(1))[ast.literal_eval(result.group(5))]
-                check = self.full_arg_dict.get(k, None)
-                if check is None:
-                    raise ValueError(f"`{eval_str}` cannot be evaluated or be evaluated safely")
-            # escape and replacement
+                        if result.group(2) == ".len":
+                            self.full_arg_dict[k] = len(ast.literal_eval(result.group(1)))
+                        else:
+                            self.full_arg_dict[k] = ast.literal_eval(result.group(1))[ast.literal_eval(result.group(5))]
+                    check = self.full_arg_dict.get(k, self.Empty())
+                    if type(check) is self.Empty:
+                        raise ValueError(f"`{eval_str}` cannot be evaluated or be evaluated safely")
+                # escape and replacement
+                else:
+                    self.full_arg_dict[k] = search_and_change(v, self.core_arg_dict)
             else:
-                self.full_arg_dict[k] = search_and_change(v, self.core_arg_dict)
+                self.full_arg_dict[k] = v
 
-    def update_from_none(self, key, value) -> None:
-        if self.full_arg_dict.get(key, None) is None:
+    def update_from_empty(self, key, value) -> None:
+        if type(self.full_arg_dict.get(key, self.Empty())) is self.Empty:
             self.full_arg_dict[key] = value
         else:
-            raise ValueError(f"full_dict[{key}] is not None but {self.full_arg_dict[key]}")
+            raise ValueError(f"full_dict[{key}] is not Empty but {self.full_arg_dict[key]}")
 
     @property
     def full_dict(self) -> dict:
         return self.full_arg_dict
     
     def full_command(self, start: Optional[str] = None) -> str:
+
+        res_list = []
+        for k, v in self.full_arg_dict.items():
+            if type(v) is self.Empty:
+                raise ValueError(f"full_dict[{k}] is Empty and must be update_from_empty()")
+            # True --> true; False --> false
+            res_list.append(f"--{k}={v}" if v is not True and v is not False else f"--{k}={str(v).lower()}")
+        res = " ".join(res_list)
+
         if start is not None:
-            return start + " " + " ".join([f"--{k}={v}" for k, v in self.full_arg_dict.items()])
+            return start + " " + res
         else:
-            return " ".join([f"--{k}={v}" for k, v in self.full_arg_dict.items()])
+            return res
 
 
 if __name__ == "__main__":
@@ -292,9 +315,13 @@ if __name__ == "__main__":
         arg_impl_json_path="./template_arg_impl.json",
         arg_impl_type_key="test_impl"
     )
-    arg_impl.update_from_none("?", 123)
     try:
-        arg_impl.update_from_none("?", 123)
+        print(print(arg_impl.full_command()))
+    except ValueError as e:
+        print(e)
+    arg_impl.update_from_empty("?", 123)
+    try:
+        arg_impl.update_from_empty("?", 123)
     except ValueError as e:
         print(e)
     print(arg_impl.full_dict)
