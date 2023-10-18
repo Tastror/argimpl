@@ -10,6 +10,9 @@ class ArgImpl:
     class Empty:
         pass
 
+    class MustChange:
+        pass
+
     def __init__(self) -> None:
         """
         After init, please use `.load_dict()` or `.load_json()` first.
@@ -213,9 +216,9 @@ class ArgImpl:
                 return output_data
 
             if type(v) is str:
-                # Empty
+                # MustChange
                 if v == "$?":
-                    self.full_arg_dict[k] = self.Empty()
+                    self.full_arg_dict[k] = self.MustChange()
                 # evaluate
                 elif v[0:2] == "$!":
                     eval_str = search_and_change(v[2:], self.core_arg_dict)
@@ -249,11 +252,14 @@ class ArgImpl:
             else:
                 self.full_arg_dict[k] = v
 
-    def update_from_empty(self, key, value) -> None:
-        if type(self.full_arg_dict.get(key, self.Empty())) is self.Empty:
+    def update_from_mustchange(self, key, value) -> None:
+        if type(self.full_arg_dict.get(key, self.Empty())) is self.MustChange:
             self.full_arg_dict[key] = value
         else:
-            raise ValueError(f"full_dict[{key}] is not Empty but {self.full_arg_dict[key]}")
+            if type(self.full_arg_dict.get(key, self.Empty())) is self.Empty:
+                raise ValueError(f"full_dict[{key}] cannot find")
+            else:
+                raise ValueError(f"full_dict[{key}] is not $? (MustChange) but {self.full_arg_dict[key]}")
 
     @property
     def full_dict(self) -> dict:
@@ -263,8 +269,8 @@ class ArgImpl:
 
         res_list = []
         for k, v in self.full_arg_dict.items():
-            if type(v) is self.Empty:
-                raise ValueError(f"full_dict[{k}] is Empty and must be update_from_empty()")
+            if type(v) is self.MustChange:
+                raise ValueError(f"full_dict[{k}] is $? (MustChange) and must be update_from_mustchange()")
             # True --> true; False --> false
             res_list.append(f"--{k}={v}" if v is not True and v is not False else f"--{k}={str(v).lower()}")
         res = " ".join(res_list)
@@ -319,9 +325,9 @@ if __name__ == "__main__":
         print(print(arg_impl.full_command()))
     except ValueError as e:
         print(e)
-    arg_impl.update_from_empty("?", 123)
+    arg_impl.update_from_mustchange("?", 123)
     try:
-        arg_impl.update_from_empty("?", 123)
+        arg_impl.update_from_mustchange("?", 123)
     except ValueError as e:
         print(e)
     print(arg_impl.full_dict)

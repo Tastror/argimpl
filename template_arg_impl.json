@@ -6,7 +6,7 @@
         "$!$A$+1": "(only at the beginning) Small evaluation. evaluate $!$A$+1 with eval($A$ + 1), operators only allowed: + - * // % [] .len",
         "\\$": "Escape. (only in the value) real $",
         "\\\\": "Escape. (only in the value) real \\ (this is for using \\ and $ together. use \\ normally is also valid)",
-        "$?": "Empty. data is Empty, you must change it yourself"
+        "$?": "MustChange. data is class(MustChange), but you must change it yourself"
     },
     "school_impl": {
         "name": "$$",
