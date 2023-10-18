@@ -261,12 +261,15 @@ class ArgImpl:
             self.full_arg_dict[key] = value
         else:
             if type(self.full_arg_dict.get(key, self.Empty())) is self.Empty:
-                raise ValueError(f"full_dict[{key}] cannot find")
+                raise ValueError(f"full_dict[{key}] cannot find when updating from MustChange")
             else:
-                raise ValueError(f"full_dict[{key}] is not $? (MustChange) but {self.full_arg_dict[key]}")
+                raise ValueError(f"full_dict[{key}] is not $? (MustChange) but {self.full_arg_dict[key]} when updating from MustChange")
 
     @property
     def full_dict(self) -> dict:
+        for k, v in self.full_arg_dict.items():
+            if type(v) is self.MustChange:
+                raise ValueError(f"full_dict[{k}] is $? (MustChange) which must use .update_from_mustchange() first")
         return self.full_arg_dict
     
     def full_command(self, start: Optional[str] = None) -> str:
@@ -274,7 +277,7 @@ class ArgImpl:
         res_list = []
         for k, v in self.full_arg_dict.items():
             if type(v) is self.MustChange:
-                raise ValueError(f"full_dict[{k}] is $? (MustChange) and must be update_from_mustchange()")
+                raise ValueError(f"full_dict[{k}] is $? (MustChange) which must use .update_from_mustchange() first")
             # True --> true; False --> false
             res_list.append(f"--{k}={v}" if v is not True and v is not False else f"--{k}={str(v).lower()}")
         res = " ".join(res_list)
@@ -328,14 +331,20 @@ if __name__ == "__main__":
         arg_impl_json_path="./template_arg_impl.json",
         arg_impl_type_key="test_impl"
     )
+
+    # $? (MustChange) value must be updated before getting the .full_xxx
     try:
-        print(print(arg_impl.full_command()))
+        print(arg_impl.full_dict)
     except ValueError as e:
-        print(e)
+        print("an error example:", e)
+
     arg_impl.update_from_mustchange("?", 123)
+
+    # non-MustChange value cannot be updated this way
     try:
-        arg_impl.update_from_mustchange("?", 123)
+        arg_impl.update_from_mustchange("?", 456)
     except ValueError as e:
-        print(e)
+        print("an error example:", e)
+
     print(arg_impl.full_dict)
     print(arg_impl.full_command("echo"))
