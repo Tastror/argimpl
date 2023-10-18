@@ -52,4 +52,4 @@ arg_impl.full_command("foo") == \
 
 Very nice, right?
 
-Refer to `template_arg_impl.json` to see more about how to write the `impl`.
+Refer to `template_arg_impl.json` and `test.py` to see more about how to write the `impl`.
