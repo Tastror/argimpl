@@ -26,7 +26,7 @@ and you want to get a full dict, using both the *data* of `core` and the *shape*
 ArgImpl can help you with it. After running ArgImpl.load_core/impl_dict(),
 
 ```python
-from arg_impl.arg_impl import ArgImpl
+from ArgImpl.arg_impl import ArgImpl
 
 impl = ArgImpl()
 impl.load_core_dict(core_dict)
