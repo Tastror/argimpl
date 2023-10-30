@@ -1,12 +1,12 @@
 {
     "doc": {
-        "$$":           ["Same replacement",    "replace with value which has the same key in core_arg_dict"                                            ],
-        "$A$":          ["Replacement",         "replace $A$ with value of key A (key only searched in core_arg_dict, same below)"                      ],
-        "$A$:$B$,$C$":  ["Replacement",         "replace $A$:$B$,$C$ with f'{A}:{B},{C}'"                                                               ],
-        "$!$A$+1":      ["Small evaluation",    "(only begin with) evaluate as eval($A$ + 1), only allowed: () + - * // % [] .len ! $data$ <int> <str>"  ],
-        "\\$":          ["Escape",              "(only in value) real $"                                                                                ],
-        "\\\\":         ["Escape",              "(only in value) real \\ (this is for using \\ and $ together. use \\ singly is also valid)"            ],
-        "$?":           ["MustChange",          "data is class{MustChange}. you need to and must use .update_from_mustchange() to update it"            ]
+        "$$":           ["Same replacement",    "replace with value which has the same key in core_arg_dict"                                    ],
+        "$A$":          ["Replacement",         "replace $A$ with value of key A (key only searched in core_arg_dict, same below)"              ],
+        "$A$:$B$,$C$":  ["Replacement",         "replace $A$:$B$,$C$ with f'{A}:{B},{C}'"                                                       ],
+        "$!$A$+1":      ["Small evaluation",    "(only begin with $!) = eval($A$ + 1), only allowed: () + - * // % [] .len ! $data$ <int> <str>"],
+        "\\$":          ["Escape",              "(only in value) real $"                                                                        ],
+        "\\\\":         ["Escape",              "(only in value) real \\ (this is for using \\ and $ together. use \\ singly is also valid)"    ],
+        "$?":           ["MustChange",          "data is class{MustChange}. you need to and must use .update_from_mustchange() to update it"    ]
     },
 
     "bar1": {
