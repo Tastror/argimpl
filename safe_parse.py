@@ -35,7 +35,6 @@ def safe_eval(str_to_parse: str) -> Tuple[Any, bool]:
     try:
         # check
         str_to_parse = " ".join(expression.parseString(str_to_parse))
-        print(str_to_parse)
         s = eval(str_to_parse)
         return s, True
     except Exception:
