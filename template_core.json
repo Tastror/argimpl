@@ -5,6 +5,7 @@
         "fruits": ["apple", "orange"],
         "pre_class": 2
     },
+
     "foo2": {
         "name": "Jerry",
         "age": "16",

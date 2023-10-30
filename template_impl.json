@@ -8,12 +8,14 @@
         "\\\\":         ["Escape",              "(only in value) real \\ (this is for using \\ and $ together. use \\ singly is also valid)"            ],
         "$?":           ["MustChange",          "data is class{MustChange}. you need to and must use .update_from_mustchange() to update it"            ]
     },
+
     "bar1": {
         "name": "$$",
         "age": "$$",
         "favourite_fruit": "$! $fruits$[0]",
         "now_class": "$! $pre_class$ + 1"
     },
+
     "bar2": {
         "name": "\\\\$$-Willia\\ms",
         "name2": "\\$$name$-Sm\\$iths",

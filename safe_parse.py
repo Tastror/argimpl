@@ -51,7 +51,7 @@ if __name__ == "__main__":
         print("error passed!")
     except Exception as e:
         print("OK, not pass")
-    
+
     print(integer.parseString("123"))
     print(integer.parseString("+456"))
     print(integer.parseString("-0789"))
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         print("error passed!")
     except Exception as e:
         print("OK, not pass")
-    
+
     try:
         print(expression.parseString("['banana', 'pear'].len * 5; import os"))
         print("error passed!")
