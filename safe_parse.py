@@ -1,6 +1,6 @@
 from typing import Optional, Tuple, Any
 from pyparsing import alphas, nums, alphanums, printables
-from pyparsing import Regex, Literal, Word, Combine, Optional, OneOrMore, ZeroOrMore, Group, Suppress, White, ParseResults
+from pyparsing import Regex, Literal, Word, Combine, Optional, OneOrMore, ZeroOrMore, Group, Suppress, White, ParseResults, StringEnd
 
 # TODO: make this safer and more accurate
 
@@ -25,10 +25,10 @@ unbracket_unit = single_expression
 bracket_unit = Literal("(") + single_expression + Literal(")")
 unit = unbracket_unit ^ bracket_unit
 expression = \
-    ((OneOrMore(head_sin_operator) + unit).setResultsName("head_sin") ^ \
+    (((OneOrMore(head_sin_operator) + unit).setResultsName("head_sin") ^ \
     (unit + OneOrMore(sin_operator)).setResultsName("sin") ^ \
     (unit + OneOrMore(bin_operator + unit)).setResultsName("bin") ^ \
-    (lister + OneOrMore(Literal("[") + unit + Literal("]"))).setResultsName("[]")) | unit.setResultsName("unit")
+    (lister + OneOrMore(Literal("[") + unit + Literal("]"))).setResultsName("[]")) | unit.setResultsName("unit")) + StringEnd()
 
 
 def safe_eval(str_to_parse: str) -> Tuple[Any, bool]:
@@ -86,8 +86,15 @@ if __name__ == "__main__":
     print(expression.parseString("[true, '123', false, [], [1, 2], -12][4][0] + (-5 * 8) % (7 - 8) // 2"))
     print(expression.parseString("['apple','banana','orange'][0]+'_and_'+['apple','banana','orange'][1]"))
     print(expression.parseString("['banana', 'pear'].len * 5"))
+
     try:
-        print(lister.parseString("import os"))
+        print(expression.parseString("import os"))
+        print("error passed!")
+    except Exception as e:
+        print("OK, not pass")
+    
+    try:
+        print(expression.parseString("['banana', 'pear'].len * 5; import os"))
         print("error passed!")
     except Exception as e:
         print("OK, not pass")
