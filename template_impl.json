@@ -26,6 +26,7 @@
         "age5": "$! $age$ % 25",
         "favourite_fruit": "$! $fruits$[1] + '_is_yummy'",
         "favourite_fruit2": "$! $fruits$.len * 5",
+        "favourite_fruit3": "$! $fruits$[-1]",
         "?": "$?"
     }
 }

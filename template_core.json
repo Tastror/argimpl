@@ -9,7 +9,7 @@
     "foo2": {
         "name": "Jerry",
         "age": "16",
-        "fruits": ["banana", "pear"],
+        "fruits": ["banana", "pear", "watermelon"],
         "pre_class": 1
     }
 }

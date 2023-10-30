@@ -1,4 +1,7 @@
-from arg_impl import ArgImpl
+import sys
+sys.path.append("..")
+
+from ArgImpl.arg_impl import ArgImpl
 
 
 core_dict = {
