@@ -1,0 +1,14 @@
+{
+    "foo1": {
+        "name": "Tom",
+        "age": "18",
+        "fruits": ["apple", "orange"],
+        "pre_class": 2
+    },
+    "foo2": {
+        "name": "Jerry",
+        "age": "16",
+        "fruits": ["banana", "pear"],
+        "pre_class": 1
+    }
+}
