@@ -36,7 +36,7 @@ impl.load_impl_dict(impl_dict)
 you can get the result such as
 
 ```python
-impl.full_arg_dict == {
+impl.full_dict == {
     "name": "John",
     "age": 10,
     "favourite_fruit": "apple_and_banana",
