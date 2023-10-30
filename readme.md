@@ -31,6 +31,7 @@ from arg_impl.arg_impl import ArgImpl
 impl = ArgImpl()
 impl.load_core_dict(core_dict)
 impl.load_impl_dict(impl_dict)
+impl.parse()  # if not here, it will parse when use .full_dict or .full_commad()
 ```
 
 you can get the result such as
