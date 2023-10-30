@@ -64,9 +64,9 @@ class ArgImpl:
                 "happy": True
             }
             impl.full_command(show_true_false=True) == \\
-                "--name=John --age=10 --favourite_fruit=apple_and_banana --class=2 --happy=true"
+                "--name=John --age=10 --favourite_fruit=apple_and_banana --class=4 --happy=true"
             impl.full_command(start="echo") == \\
-                "echo --name=John --age=10 --favourite_fruit=apple_and_banana --class=2 --happy"
+                "echo --name=John --age=10 --favourite_fruit=apple_and_banana --class=4 --happy"
             ```
 
             2. json example
