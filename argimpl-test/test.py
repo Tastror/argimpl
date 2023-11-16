@@ -1,8 +1,14 @@
+import os
 import sys
+
+sys.path.append("../..")
 sys.path.append("..")
 
-from ArgImpl.arg_impl import ArgImpl
+prefix = "."
+if not os.path.exists(f"{prefix}/template_core.json"):
+    prefix = ".."
 
+from argimpl import ArgImpl
 
 core_dict = {
     "age": 10,
@@ -31,9 +37,9 @@ print(arg_impl.full_command("echo"))
 print("\nExample 2\n")
 arg_impl = ArgImpl()
 arg_impl.load_json_and_parse(
-    core_dicts_path="./template_core.json",
+    core_dicts_path=f"{prefix}/template_core.json",
     core_choosen_key="foo1",
-    impl_dicts_path="./template_impl.json",
+    impl_dicts_path=f"{prefix}/template_impl.json",
     impl_choosen_key="bar1"
 )
 print(arg_impl.full_dict)
@@ -49,9 +55,9 @@ except SyntaxError as e:
     print("an error example:", e)
 
 arg_impl.load_json_and_parse(
-    core_dicts_path="./template_core.json",
+    core_dicts_path=f"{prefix}/template_core.json",
     core_choosen_key="foo2",
-    impl_dicts_path="./template_impl.json",
+    impl_dicts_path=f"{prefix}/template_impl.json",
     impl_choosen_key="bar2"
 )
 

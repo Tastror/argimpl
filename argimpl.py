@@ -4,7 +4,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Optional, Union, Any
 
-from ArgImpl.safe_parse import safe_eval
+from .safeparse import safe_eval
 
 
 class ArgImpl:
